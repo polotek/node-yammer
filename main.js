@@ -19,14 +19,14 @@ Yammer.prototype._req = function (opts, cb) {
   }
   if (!opts.headers) opts.headers = {};
   opts.headers.authorization = auth;
-  
+
   request(opts, function (e, resp, body) {
     if (e) return cb(e);
     
     if (resp.statusCode > 399) {
       return cb(new Error('Error status '+resp.statusCode+'\n'), resp);
     }
-    
+
     if (resp.headers['content-type'].slice(0, 'application/json'.length) === 'application/json') {
       cb(null, JSON.parse(body));
     } else {
@@ -38,7 +38,10 @@ Yammer.prototype._get = function (url, cb) {
   this._req({uri:url, method:'GET'}, cb);
 }
 Yammer.prototype._formpost = function (url, data, cb) {
-  this._req({uri:url, method:'POST', body:qs.stringify(data)})
+  this._req({uri:url, method:'POST', body:qs.stringify(data)}, cb)
+}
+Yammer.prototype._post = function (url, data, cb) {
+  this._req({uri:url, method:'POST', body:JSON.stringify(data), headers:{'content-type':'application/json'}}, cb)
 }
 
 Yammer.prototype.messages = function (cb) {
@@ -86,5 +89,8 @@ Yammer.prototype.createMessage = function (obj, cb) {
 Yammer.prototype.relationships = function (cb) {
   this._get('https://www.yammer.com/api/v1/relationships.', cb);
 }
+Yammer.prototype.invite = function (email, cb) {
+  this._post('https://www.yammer.com/api/v1/invitations.', {email:email}, cb)
+}
 
-
+exports.Yammer = Yammer

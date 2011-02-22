@@ -1,0 +1,20 @@
+{
+  "name": "yammer",
+  "description": "Client library for the yammer api.",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mikeal/node-yammer.git"
+  },
+  "author": "Mikeal Rogers <mikeal.rogers@gmail.com>",
+  "main": "main.js",
+  "directories": {
+    "lib": "."
+  },
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": 
+    { "request": "*"
+    }
+}
