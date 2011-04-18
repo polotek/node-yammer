@@ -1,5 +1,6 @@
 var request = require('request')
   , qs = require('querystring')
+  , url = require('url')
   ;
   
 function RealTime (yam) {
@@ -86,28 +87,41 @@ function Yammer (opts) {
   this.realtime = new RealTime(this);
 }
 Yammer.prototype._req = function (opts, cb) {
-  var auth = 'OAuth ' +
-             'oauth_consumer_key="'+this.opts.oauth_consumer_key+'",' +
-             'oauth_token="'+this.opts.oauth_token+'",' +
-             'oauth_signature_method="'+ (this.opts.oauth_signature_method || "PLAINTEXT") + '",' +
-             'oauth_timestamp="'+(this.opts.oauth_timestamp || (new Date()).getTime())+'",' +
-             'oauth_nonce="'+(this.opts.oauth_nonce || Math.floor(Math.random()*1111111111))+'",' +
-             'oauth_verifier="'+this.opts.oauth_verifier+'",' +
-             'oauth_signature="'+this.opts.oauth_signature+'%26'+this.opts.oauth_token_secret+'"'
-             ;
+  var auth
+  if (!this.opts.access_token) {
+    auth = 'OAuth ' +
+           'oauth_consumer_key="'+this.opts.oauth_consumer_key+'",' +
+           'oauth_token="'+this.opts.oauth_token+'",' +
+           'oauth_signature_method="'+ (this.opts.oauth_signature_method || "PLAINTEXT") + '",' +
+           'oauth_timestamp="'+(this.opts.oauth_timestamp || (new Date()).getTime())+'",' +
+           'oauth_nonce="'+(this.opts.oauth_nonce || Math.floor(Math.random()*1111111111))+'",' +
+           'oauth_verifier="'+this.opts.oauth_verifier+'",' +
+           'oauth_signature="'+this.opts.oauth_signature+'%26'+this.opts.oauth_token_secret+'"'
+           ;
+  }
+  
   
   if (opts.uri[opts.uri.length - 1] === '.') {
     opts.uri += (this.opts.format || 'json');
   }
+  
+  if (this.opts.access_token) {
+    var u = url.parse(opts.uri);
+    var q = qs.parse(u.query);
+    q.access_token = this.opts.access_token;
+    opts.uri = u.protocol + '//' + u.host + u.pathname + '?' + qs.stringify(q);
+  }
+  
   if (!opts.headers) opts.headers = {};
-  opts.headers.authorization = auth;
+  if (auth) {
+    opts.headers.authorization = auth;
+  }
   // console.log(opts.body)
   request(opts, function (e, resp, body) {
     if (e) return cb(e);
     if (resp.statusCode > 399) {
       return cb(new Error('Error status '+resp.statusCode+'\n'), body, resp);
     }
-
     if (resp.headers['content-type'].slice(0, 'application/json'.length) === 'application/json') {
       cb(null, JSON.parse(body), resp);
     } else {
@@ -119,7 +133,7 @@ Yammer.prototype._get = function (url, cb) {
   this._req({uri:url, method:'GET'}, cb);
 }
 Yammer.prototype._formpost = function (url, data, cb) {
-  this._req({uri:url, method:'POST', body:qs.stringify(data)}, cb)
+  this._req({uri:url, method:'POST', headers:{'content-type':'application/x-www-form-urlencoded'}, body:qs.stringify(data)}, cb)
 }
 Yammer.prototype._post = function (url, data, cb) {
   this._req({uri:url, method:'POST', body:JSON.stringify(data), headers:{'content-type':'application/json'}}, cb)
@@ -240,7 +254,9 @@ Yammer.prototype.checkTopicSubscription = function (topicid, cb) {
   });
 }
 
-
+// Yammer.prototype.createTopic = function (name, cb) {
+//   this._formpost('https://www.yammer.com/api/v1/topics.', {id:name}, cb)
+// }
 
 Yammer.prototype.search = function (term, cb) {
   this._get('https://www.yammer.com/api/v1/search.json?search='+term, cb);
@@ -262,6 +278,17 @@ Yammer.prototype.invite = function (email, cb) {
 }
 Yammer.prototype.createMessage = function (obj, cb) {
   this._formpost('https://www.yammer.com/api/v1/messages.json', obj, cb);
+}
+
+Yammer.prototype.presences = function (cb) {
+  this._get('https://www.yammer.com/api/v1/presences.', cb);
+}
+Yammer.prototype.presencesByFollowing = function (cb) {
+  this._get('https://www.yammer.com/api/v1/presences/by_following.', cb);
+}
+
+Yammer.prototype.tokens = function (cb) {
+  this._get('https://www.yammer.com/api/v1/oauth/tokens.', cb)
 }
 
 exports.Yammer = Yammer
