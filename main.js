@@ -278,6 +278,9 @@ Yammer.prototype.invite = function (email, cb) {
 Yammer.prototype.createMessage = function (obj, cb) {
   this._formpost('https://www.yammer.com/api/v1/messages.json', obj, cb);
 }
+Yammer.prototype.likeMessage = function(obj, cb) {
+  this._formpost('https://www.yammer.com/api/v1/messages/liked_by', obj, cb);
+}
 
 Yammer.prototype.presences = function (cb) {
   this._get('https://www.yammer.com/api/v1/presences.', cb);
