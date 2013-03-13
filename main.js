@@ -88,7 +88,9 @@ function Yammer (opts) {
 }
 Yammer.prototype._req = function (opts, cb) {
   var auth
-  if (!this.opts.access_token) {
+  if (this.opts.access_token) {
+    auth = 'Bearer ' + this.opts.access_token;
+  } else {
     auth = 'OAuth ' +
            'oauth_consumer_key="'+this.opts.oauth_consumer_key+'",' +
            'oauth_token="'+this.opts.oauth_token+'",' +
@@ -103,13 +105,6 @@ Yammer.prototype._req = function (opts, cb) {
   
   if (opts.uri[opts.uri.length - 1] === '.') {
     opts.uri += (this.opts.format || 'json');
-  }
-  
-  if (this.opts.access_token) {
-    var u = url.parse(opts.uri);
-    var q = qs.parse(u.query);
-    q.access_token = this.opts.access_token;
-    opts.uri = u.protocol + '//' + u.host + u.pathname + '?' + qs.stringify(q);
   }
   
   if (!opts.headers) opts.headers = {};
