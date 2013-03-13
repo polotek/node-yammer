@@ -175,6 +175,10 @@ Yammer.prototype.messagesPrivate = function (cb) {
 }
 Yammer.prototype.directMessages = Yammer.prototype.messagesPrivate;
 
+Yammer.prototype.messagesInbox = function (cb) {
+  this._get('https://www.yammer.com/api/v1/messages/inbox.', cb);
+}
+
 Yammer.prototype.groups = function (cb) {
   this._get('https://www.yammer.com/api/v1/groups.', cb);
 }
