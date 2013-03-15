@@ -1,8 +1,25 @@
 var request = require('request')
   , qs = require('querystring')
   , url = require('url')
+  , slice = Array.prototype.slice;
   ;
-  
+
+
+function mixin(target) {
+  var args = slice.call(arguments,1);
+
+  args.forEach(function(p) {
+    if(!p) { return; }
+
+    Object.keys(p)
+      .forEach(function(k) {
+        target[k] = p[k];
+      });
+  });
+
+  return target;
+}
+
 function RealTime (yam) {
   this.yam = yam;
 }
@@ -83,7 +100,9 @@ RealTime.prototype.messages = function (cb) {
 }
 
 function Yammer (opts) {
-  this.opts = opts;
+  this.opts = mixin({
+    hostname: 'http://www.yammer.com'
+  }, opts);
   this.realtime = new RealTime(this);
 }
 Yammer.prototype._req = function (opts, cb) {
@@ -111,7 +130,7 @@ Yammer.prototype._req = function (opts, cb) {
   if (auth) {
     opts.headers.authorization = auth;
   }
-  // console.log(opts.body)
+
   request(opts, function (e, resp, body) {
     if (e) return cb(e);
     if (resp.statusCode > 399) {
@@ -135,89 +154,89 @@ Yammer.prototype._post = function (url, data, cb) {
 }
 
 Yammer.prototype.messages = function (cb) {
-  this._get('https://www.yammer.com/api/v1/messages.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages.', cb);
 }
 Yammer.prototype.messagesSent = function (cb) {
-  this._get('https://www.yammer.com/api/v1/messages/sent.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/sent.', cb);
 }
 Yammer.prototype.messagesReceived = function (cb) {
-  this._get('https://www.yammer.com/api/v1/messages/received.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/received.', cb);
 }
 Yammer.prototype.messagesFollowing = function (cb) {
-  this._get('https://www.yammer.com/api/v1/messages/following.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/following.', cb);
 }
 Yammer.prototype.messagesFromUser = function (userid, cb) {
-  this._get('https://www.yammer.com/api/v1/messages/from_user/'+userid+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/from_user/'+userid+'.', cb);
 }
 Yammer.prototype.messagesFromBot = function (botid, cb) {
-  this._get('https://www.yammer.com/api/v1/messages/bot_user/'+botid+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/bot_user/'+botid+'.', cb);
 }
 Yammer.prototype.messagesWithTag = function (tagid, cb) {
-  this._get('https://www.yammer.com/api/v1/messages/tagged_with/'+tagid+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/tagged_with/'+tagid+'.', cb);
 }
 Yammer.prototype.messagesInGroup = function (groupid, cb) {
-  this._get('https://www.yammer.com/api/v1/messages/in_group/'+groupid+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/in_group/'+groupid+'.', cb);
 }
 Yammer.prototype.messagesFavoritesOf = function (userid, cb) {
-  this._get('https://www.yammer.com/api/v1/messages/favorites_of/'+userid+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/favorites_of/'+userid+'.', cb);
 }
 Yammer.prototype.messagesLikedBy = function (userid, cb) {
-  this._get('https://www.yammer.com/api/v1/messages/liked_by/'+userid+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/liked_by/'+userid+'.', cb);
 }
 Yammer.prototype.messagesInThread = function (threadid, cb) {
-  this._get('https://www.yammer.com/api/v1/messages/in_thread/'+threadid+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/in_thread/'+threadid+'.', cb);
 }
 Yammer.prototype.messagesAboutTopic = function (id, cb) {
-  this._get('https://www.yammer.com/api/v1/messages/about_topic/'+id+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/about_topic/'+id+'.', cb);
 }
 Yammer.prototype.messagesPrivate = function (cb) {
-  this._get('https://www.yammer.com/api/v1/messages/private.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/private.', cb);
 }
 Yammer.prototype.directMessages = Yammer.prototype.messagesPrivate;
 
 Yammer.prototype.messagesInbox = function (cb) {
-  this._get('https://www.yammer.com/api/v1/messages/inbox.', cb);
+  this._get(this.opts.hostname + '/api/v1/messages/inbox.', cb);
 }
 
 Yammer.prototype.groups = function (cb) {
-  this._get('https://www.yammer.com/api/v1/groups.', cb);
+  this._get(this.opts.hostname + '/api/v1/groups.', cb);
 }
 Yammer.prototype.group = function (id, cb) {
-  this._get('https://www.yammer.com/api/v1/groups/'+id+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/groups/'+id+'.', cb);
 }
 
 Yammer.prototype.topic = function (id, cb) {
-  this._get('https://www.yammer.com/api/v1/topics/'+id+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/topics/'+id+'.', cb);
 }
 
 Yammer.prototype.users = function (cb) {
-  this._get('https://www.yammer.com/api/v1/users.', cb);
+  this._get(this.opts.hostname + '/api/v1/users.', cb);
 }
 Yammer.prototype.user = function (id, cb) {
-  this._get('https://www.yammer.com/api/v1/users/'+id+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/users/'+id+'.', cb);
 }
 Yammer.prototype.userByEmail = function (email, cb) {
-  this._get('https://www.yammer.com/api/v1/users/by_email.json?email='+encodeURIComponent(email), cb);
+  this._get(this.opts.hostname + '/api/v1/users/by_email.json?email='+encodeURIComponent(email), cb);
 }
 
 Yammer.prototype.relationships = function (cb) {
-  this._get('https://www.yammer.com/api/v1/relationships.', cb);
+  this._get(this.opts.hostname + '/api/v1/relationships.', cb);
 }
 
 Yammer.prototype.suggestions = function (cb) {
-  this._get('https://www.yammer.com/api/v1/suggestions.', cb);
+  this._get(this.opts.hostname + '/api/v1/suggestions.', cb);
 }
 Yammer.prototype.suggestedUsers = function (cb) {
-  this._get('https://www.yammer.com/api/v1/suggestions/users.', cb);
+  this._get(this.opts.hostname + '/api/v1/suggestions/users.', cb);
 }
 
 Yammer.prototype.thread = function (id, cb) {
-  this._get('https://www.yammer.com/api/v1/threads/'+id+'.', cb);
+  this._get(this.opts.hostname + '/api/v1/threads/'+id+'.', cb);
 }
 
 
 Yammer.prototype.checkUserSubscription = function (userid, cb) {
-  this._get('https://www.yammer.com/api/v1/subscriptions/to_user/'+userid+'.', function (e, body, resp) {
+  this._get(this.opts.hostname + '/api/v1/subscriptions/to_user/'+userid+'.', function (e, body, resp) {
     if (resp.statusCode === 404) {
       return cb(null, false);
     } 
@@ -226,7 +245,7 @@ Yammer.prototype.checkUserSubscription = function (userid, cb) {
   });
 }
 Yammer.prototype.checkTagSubscription = function (tagid, cb) {
-  this._get('https://www.yammer.com/api/v1/subscriptions/to_tag/'+tagid+'.', function (e, body, resp) {
+  this._get(this.opts.hostname + '/api/v1/subscriptions/to_tag/'+tagid+'.', function (e, body, resp) {
     if (resp.statusCode === 404) {
       return cb(null, false);
     } 
@@ -235,7 +254,7 @@ Yammer.prototype.checkTagSubscription = function (tagid, cb) {
   });
 }
 Yammer.prototype.checkThreadSubscription = function (threadid, cb) {
-  this._get('https://www.yammer.com/api/v1/subscriptions/to_thread/'+threadid+'.', function (e, body, resp) {
+  this._get(this.opts.hostname + '/api/v1/subscriptions/to_thread/'+threadid+'.', function (e, body, resp) {
     if (resp.statusCode === 404) {
       return cb(null, false);
     } 
@@ -244,7 +263,7 @@ Yammer.prototype.checkThreadSubscription = function (threadid, cb) {
   });
 }
 Yammer.prototype.checkTopicSubscription = function (topicid, cb) {
-  this._get('https://www.yammer.com/api/v1/subscriptions/to_topic/'+topicid+'.', function (e, body, resp) {
+  this._get(this.opts.hostname + '/api/v1/subscriptions/to_topic/'+topicid+'.', function (e, body, resp) {
     if (resp.statusCode === 404) {
       return cb(null, false);
     } 
@@ -254,43 +273,43 @@ Yammer.prototype.checkTopicSubscription = function (topicid, cb) {
 }
 
 // Yammer.prototype.createTopic = function (name, cb) {
-//   this._formpost('https://www.yammer.com/api/v1/topics.', {id:name}, cb)
+//   this._formpost(this.opts.hostname + '/api/v1/topics.', {id:name}, cb)
 // }
 
 Yammer.prototype.search = function (term, cb) {
-  this._get('https://www.yammer.com/api/v1/search.json?search='+term, cb);
+  this._get(this.opts.hostname + '/api/v1/search.json?search='+term, cb);
 }
 
 Yammer.prototype.networks = function (cb) {
-  this._get('https://www.yammer.com/api/v1/networks/current.', cb);
+  this._get(this.opts.hostname + '/api/v1/networks/current.', cb);
 }
 // Yammer.prototype.showlikes = function (user, cb) {
 //   if (typeof cb === undefined) {
 //     cb = user
 //     user = 'current'
 //   }
-//   this._get('https://www.yammer.com/api/v1/messages/liked_by/'+user+'.', cb)
+//   this._get(this.opts.hostname + '/api/v1/messages/liked_by/'+user+'.', cb)
 // }
 
 Yammer.prototype.invite = function (email, cb) {
-  this._post('https://www.yammer.com/api/v1/invitations.', {email:email}, cb);
+  this._post(this.opts.hostname + '/api/v1/invitations.', {email:email}, cb);
 }
 Yammer.prototype.createMessage = function (obj, cb) {
-  this._formpost('https://www.yammer.com/api/v1/messages.json', obj, cb);
+  this._formpost(this.opts.hostname + '/api/v1/messages.json', obj, cb);
 }
 Yammer.prototype.likeMessage = function(obj, cb) {
-  this._formpost('https://www.yammer.com/api/v1/messages/liked_by', obj, cb);
+  this._formpost(this.opts.hostname + '/api/v1/messages/liked_by', obj, cb);
 }
 
 Yammer.prototype.presences = function (cb) {
-  this._get('https://www.yammer.com/api/v1/presences.', cb);
+  this._get(this.opts.hostname + '/api/v1/presences.', cb);
 }
 Yammer.prototype.presencesByFollowing = function (cb) {
-  this._get('https://www.yammer.com/api/v1/presences/by_following.', cb);
+  this._get(this.opts.hostname + '/api/v1/presences/by_following.', cb);
 }
 
 Yammer.prototype.tokens = function (cb) {
-  this._get('https://www.yammer.com/api/v1/oauth/tokens.', cb)
+  this._get(this.opts.hostname + '/api/v1/oauth/tokens.', cb)
 }
 
 exports.Yammer = Yammer
