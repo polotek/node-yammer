@@ -1,12 +1,13 @@
 {
   "name": "yammer",
-  "description": "Client library for the yammer api.",
+  "description": "Client library for the yammer api",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mikeal/node-yammer.git"
+    "url": "https://github.com/polotek/node-yammer.git"
   },
   "author": "Mikeal Rogers <mikeal.rogers@gmail.com>",
+  "maintainer": "polotek (Marco Rogers)",
   "main": "main.js",
   "directories": {
     "lib": "."
@@ -14,7 +15,11 @@
   "engines": {
     "node": "*"
   },
-  "dependencies": 
-    { "request": "*"
-    }
+  "dependencies": {
+    "request": "~2.16",
+    "otools": "*"
+  },
+  "devDependencies": {
+    "tape": "~0.3"
+  }
 }

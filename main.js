@@ -1,24 +1,9 @@
 var request = require('request')
   , qs = require('querystring')
   , url = require('url')
-  , slice = Array.prototype.slice;
-  ;
+  , mixin = require('otools').mixin;
 
-
-function mixin(target) {
-  var args = slice.call(arguments,1);
-
-  args.forEach(function(p) {
-    if(!p) { return; }
-
-    Object.keys(p)
-      .forEach(function(k) {
-        target[k] = p[k];
-      });
-  });
-
-  return target;
-}
+var slice = Array.prototype.slice;
 
 function RealTime (yam) {
   this.yam = yam;
