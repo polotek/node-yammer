@@ -9,8 +9,8 @@
   "author": "Mikeal Rogers <mikeal.rogers@gmail.com>",
   "maintainer": "polotek (Marco Rogers)",
   "main": "main.js",
-  "directories": {
-    "lib": "."
+  "scripts": {
+    "test": "node tests.js"
   },
   "engines": {
     "node": "*"
@@ -20,6 +20,8 @@
     "otools": "*"
   },
   "devDependencies": {
-    "tape": "~0.3"
+    "tape": "~0.3",
+    "mock": "~0.1",
+    "sinon": "~1.6"
   }
 }
