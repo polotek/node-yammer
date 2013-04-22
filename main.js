@@ -137,7 +137,16 @@ Yammer.prototype._formpost = function (url, data, cb) {
 Yammer.prototype._post = function (url, data, cb) {
   this._req({uri:url, method:'POST', body:JSON.stringify(data), headers:{'content-type':'application/json'}}, cb)
 }
+Yammer.prototype._boolCb = function(cb) {
+  return function(e, body, resp) {
+    if (resp.statusCode === 404) {
+      return cb(null, false);
+    } 
+    if (e) { return cb(e, body); }
 
+    return cb(null, body);
+  };
+}
 Yammer.prototype.messages = function (cb) {
   this._get(this.opts.hostname + '/api/v1/messages.', cb);
 }
@@ -221,40 +230,20 @@ Yammer.prototype.thread = function (id, cb) {
 
 
 Yammer.prototype.checkUserSubscription = function (userid, cb) {
-  this._get(this.opts.hostname + '/api/v1/subscriptions/to_user/'+userid+'.', function (e, body, resp) {
-    if (resp.statusCode === 404) {
-      return cb(null, false);
-    } 
-    if (e) return cb(e, body);
-    cb(null, body);
-  });
+  var cb = this._boolCb(cb);
+  this._get(this.opts.hostname + '/api/v1/subscriptions/to_user/'+userid+'.', cb);
 }
 Yammer.prototype.checkTagSubscription = function (tagid, cb) {
-  this._get(this.opts.hostname + '/api/v1/subscriptions/to_tag/'+tagid+'.', function (e, body, resp) {
-    if (resp.statusCode === 404) {
-      return cb(null, false);
-    } 
-    if (e) return cb(e, body);
-    cb(null, body);
-  });
+  var cb = this._boolCb(cb);
+  this._get(this.opts.hostname + '/api/v1/subscriptions/to_tag/'+tagid+'.', cb);
 }
 Yammer.prototype.checkThreadSubscription = function (threadid, cb) {
-  this._get(this.opts.hostname + '/api/v1/subscriptions/to_thread/'+threadid+'.', function (e, body, resp) {
-    if (resp.statusCode === 404) {
-      return cb(null, false);
-    } 
-    if (e) return cb(e, body);
-    cb(null, body);
-  });
+  var cb = this._boolCb(cb);
+  this._get(this.opts.hostname + '/api/v1/subscriptions/to_thread/'+threadid+'.', cb);
 }
 Yammer.prototype.checkTopicSubscription = function (topicid, cb) {
-  this._get(this.opts.hostname + '/api/v1/subscriptions/to_topic/'+topicid+'.', function (e, body, resp) {
-    if (resp.statusCode === 404) {
-      return cb(null, false);
-    } 
-    if (e) return cb(e, body);
-    cb(null, body);
-  });
+  var cb = this._boolCb(cb);
+  this._get(this.opts.hostname + '/api/v1/subscriptions/to_topic/'+topicid+'.', cb);
 }
 
 // Yammer.prototype.createTopic = function (name, cb) {

@@ -107,3 +107,33 @@ test('500 response returns error', function(t) {
   t.ok(spy.calledWithMatch(Error));
   t.end();
 });
+
+test('boolean callbacks return false for 404', function(t) {
+  requestMock = sinon.stub().callsArgWith(1
+    , null
+    , {
+      statusCode: 404
+    }
+    , '');
+
+  var spy = sinon.spy()
+  , yam = new Yammer();
+
+  yam.checkUserSubscription('id', spy);
+
+  t.ok(spy.calledWith(null, false));
+
+  yam.checkTagSubscription('id', spy);
+
+  t.ok(spy.calledWith(null, false));
+
+  yam.checkThreadSubscription('id', spy);
+
+  t.ok(spy.calledWith(null, false));
+
+  yam.checkTopicSubscription('id', spy);
+
+  t.ok(spy.calledWith(null, false));
+
+  t.end();
+});
