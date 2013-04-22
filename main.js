@@ -246,10 +246,6 @@ Yammer.prototype.checkTopicSubscription = function (topicid, cb) {
   this._get(this.opts.hostname + '/api/v1/subscriptions/to_topic/'+topicid+'.', cb);
 }
 
-// Yammer.prototype.createTopic = function (name, cb) {
-//   this._formpost(this.opts.hostname + '/api/v1/topics.', {id:name}, cb)
-// }
-
 Yammer.prototype.search = function (term, cb) {
   this._get(this.opts.hostname + '/api/v1/search.json?search='+term, cb);
 }
@@ -257,13 +253,6 @@ Yammer.prototype.search = function (term, cb) {
 Yammer.prototype.networks = function (cb) {
   this._get(this.opts.hostname + '/api/v1/networks/current.', cb);
 }
-// Yammer.prototype.showlikes = function (user, cb) {
-//   if (typeof cb === undefined) {
-//     cb = user
-//     user = 'current'
-//   }
-//   this._get(this.opts.hostname + '/api/v1/messages/liked_by/'+user+'.', cb)
-// }
 
 Yammer.prototype.invite = function (email, cb) {
   this._post(this.opts.hostname + '/api/v1/invitations.', {email:email}, cb);
