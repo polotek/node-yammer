@@ -11,6 +11,18 @@ var yammer = mock('./main', {
   }, require)
   , Yammer = yammer.Yammer;
 
+test('request can take a uri string', function(t) {
+  requestMock = sinon.spy();
+
+  var yam = new Yammer();
+
+  yam.request('/test', nop);
+
+  t.ok(requestMock.calledWithMatch({ uri: '/test' }));
+
+  t.end();
+});
+
 test('access_token is added as authorization header', function(t) {
   requestMock = sinon.spy();
 
@@ -145,9 +157,6 @@ test('if no callback, request returns a stream', function(t) {
     , ret;
 
   ret = yam.request({ uri: '/test.json' });
-  t.equal(stream, ret);
-
-  ret = yam._get({ uri: '/test.json' });
   t.equal(stream, ret);
 
   ret = yam._post({ uri: '/test.json' }, {});
