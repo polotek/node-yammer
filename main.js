@@ -50,7 +50,6 @@ RealTime.prototype.messages = function (cb) {
           ])
         }, function (e, resp, b) {
           if (e) return cb(e);
-          console.log(b)
           if (resp.statusCode !== 200) return cb(new Error('Status code is not 200\n'+b))
           id += 1
           var getchannel = function () {
