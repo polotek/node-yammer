@@ -34,25 +34,76 @@ test('access_token is added as authorization header', function(t) {
 });
 
 test('json format is added by default', function(t) {
-  requestMock = sinon.expectation.create()
-    .withArgs({
-      uri: '/test.json'
-      , headers: {
-        authorization: 'Bearer test_token'
-      }
-    });
+  requestMock = sinon.spy();
 
-  var yam = new Yammer({
-    access_token: 'test_token'
-  });
+  var yam = new Yammer();
 
   yam._req({
     uri: '/test.'
   }, nop);
 
-  t.doesNotThrow(function() {
-    requestMock.verify();
-  });
+  t.ok(requestMock.calledWithMatch({ uri: '/test.json' }));
 
+  t.end();
+});
+
+
+test('json response is parsed automatically', function(t) {
+  requestMock = sinon.stub().callsArgWith(1
+    , null
+    , {
+      statusCode: 200
+      , headers: {
+        'content-type': 'application/json'
+      }
+    }
+    , '{ "test": "json" }');
+
+  var spy = sinon.spy()
+  , yam = new Yammer();
+
+  yam._req({
+    uri: '/test.json'
+  }, spy);
+
+  t.ok(spy.calledWith(null, { test: 'json' }));
+  t.end();
+});
+
+test('400 response returns error', function(t) {
+  requestMock = sinon.stub().callsArgWith(1
+    , null
+    , {
+      statusCode: 404
+    }
+    , '');
+
+  var spy = sinon.spy()
+  , yam = new Yammer();
+
+  yam._req({
+    uri: '/test.json'
+  }, spy);
+
+  t.ok(spy.calledWithMatch(Error));
+  t.end();
+});
+
+test('500 response returns error', function(t) {
+  requestMock = sinon.stub().callsArgWith(1
+    , null
+    , {
+      statusCode: 500
+    }
+    , '');
+
+  var spy = sinon.spy()
+  , yam = new Yammer();
+
+  yam._req({
+    uri: '/test.json'
+  }, spy);
+
+  t.ok(spy.calledWithMatch(Error));
   t.end();
 });

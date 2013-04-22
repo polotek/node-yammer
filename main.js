@@ -111,13 +111,13 @@ Yammer.prototype._req = function (opts, cb) {
     opts.uri += (this.opts.format || 'json');
   }
   
-  if (!opts.headers) opts.headers = {};
+  if (!opts.headers) { opts.headers = {}; }
   if (auth) {
     opts.headers.authorization = auth;
   }
 
   request(opts, function (e, resp, body) {
-    if (e) return cb(e);
+    if (e) { return cb(e); }
     if (resp.statusCode > 399) {
       return cb(new Error('Error status '+resp.statusCode+'\n'), body, resp);
     }
