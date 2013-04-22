@@ -19,7 +19,7 @@ test('access_token is added as authorization header', function(t) {
     access_token: 'test_token'
   });
 
-  yam._req({
+  yam.request({
     uri: '/test'
   }, nop);
 
@@ -38,7 +38,7 @@ test('json format is added by default', function(t) {
 
   var yam = new Yammer();
 
-  yam._req({
+  yam.request({
     uri: '/test.'
   }, nop);
 
@@ -62,7 +62,7 @@ test('json response is parsed automatically', function(t) {
   var spy = sinon.spy()
   , yam = new Yammer();
 
-  yam._req({
+  yam.request({
     uri: '/test.json'
   }, spy);
 
@@ -81,7 +81,7 @@ test('400 response returns error', function(t) {
   var spy = sinon.spy()
   , yam = new Yammer();
 
-  yam._req({
+  yam.request({
     uri: '/test.json'
   }, spy);
 
@@ -100,7 +100,7 @@ test('500 response returns error', function(t) {
   var spy = sinon.spy()
   , yam = new Yammer();
 
-  yam._req({
+  yam.request({
     uri: '/test.json'
   }, spy);
 
