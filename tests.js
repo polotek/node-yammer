@@ -4,21 +4,16 @@ var test = require('tape')
   , nop = function() {}
   , requestMock = nop;
 
-var Yammer = mock('./main', {
+var yammer = mock('./main', {
     request: function() {
-      requestMock.apply(null, arguments);
+      return requestMock.apply(null, arguments);
     }
-  }, require).Yammer;
+  }, require)
+  , Yammer = yammer.Yammer;
 
 
 test('access_token is added as authorization header', function(t) {
-  requestMock = sinon.expectation.create()
-    .withArgs({
-      uri: '/test'
-      , headers: {
-        authorization: 'Bearer test_token'
-      }
-    });
+  requestMock = sinon.spy();
 
   var yam = new Yammer({
     access_token: 'test_token'
@@ -28,9 +23,12 @@ test('access_token is added as authorization header', function(t) {
     uri: '/test'
   }, nop);
 
-  t.doesNotThrow(function() {
-    requestMock.verify();
-  });
+  t.ok(requestMock.calledWith({
+    uri: '/test'
+    , headers: {
+      authorization: 'Bearer test_token'
+    }
+  }));
 
   t.end();
 });

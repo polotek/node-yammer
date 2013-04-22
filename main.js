@@ -90,23 +90,23 @@ function Yammer (opts) {
   }, opts);
   this.realtime = new RealTime(this);
 }
-Yammer.prototype._req = function (opts, cb) {
-  var auth
+Yammer.prototype._oauth = function() {
   if (this.opts.access_token) {
-    auth = 'Bearer ' + this.opts.access_token;
-  } else {
-    auth = 'OAuth ' +
-           'oauth_consumer_key="'+this.opts.oauth_consumer_key+'",' +
-           'oauth_token="'+this.opts.oauth_token+'",' +
-           'oauth_signature_method="'+ (this.opts.oauth_signature_method || "PLAINTEXT") + '",' +
-           'oauth_timestamp="'+(this.opts.oauth_timestamp || (new Date()).getTime())+'",' +
-           'oauth_nonce="'+(this.opts.oauth_nonce || Math.floor(Math.random()*1111111111))+'",' +
-           'oauth_verifier="'+this.opts.oauth_verifier+'",' +
-           'oauth_signature="'+this.opts.oauth_signature+'%26'+this.opts.oauth_token_secret+'"'
-           ;
+    return 'Bearer ' + this.opts.access_token;
   }
-  
-  
+
+  return 'OAuth ' +
+   'oauth_consumer_key="'+this.opts.oauth_consumer_key+'",' +
+   'oauth_token="'+this.opts.oauth_token+'",' +
+   'oauth_signature_method="'+ (this.opts.oauth_signature_method || "PLAINTEXT") + '",' +
+   'oauth_timestamp="'+(this.opts.oauth_timestamp || (new Date()).getTime())+'",' +
+   'oauth_nonce="'+(this.opts.oauth_nonce || Math.floor(Math.random()*1111111111))+'",' +
+   'oauth_verifier="'+this.opts.oauth_verifier+'",' +
+   'oauth_signature="'+this.opts.oauth_signature+'%26'+this.opts.oauth_token_secret+'"';
+}
+Yammer.prototype._req = function (opts, cb) {
+  var auth = this._oauth();
+
   if (opts.uri[opts.uri.length - 1] === '.') {
     opts.uri += (this.opts.format || 'json');
   }
