@@ -11,7 +11,6 @@ var yammer = mock('./main', {
   }, require)
   , Yammer = yammer.Yammer;
 
-
 test('access_token is added as authorization header', function(t) {
   requestMock = sinon.spy();
 
@@ -134,6 +133,31 @@ test('boolean callbacks return false for 404', function(t) {
   yam.checkTopicSubscription('id', spy);
 
   t.ok(spy.calledWith(null, false));
+
+  t.end();
+});
+
+test('if no callback, request returns a stream', function(t) {
+  var stream = { pipe: function() {} };
+  requestMock = sinon.stub().returns(stream);
+
+  var yam = new Yammer()
+    , ret;
+
+  ret = yam.request({ uri: '/test.json' });
+  t.equal(stream, ret);
+
+  ret = yam._get({ uri: '/test.json' });
+  t.equal(stream, ret);
+
+  ret = yam._post({ uri: '/test.json' }, {});
+  t.equal(stream, ret);
+
+  ret = yam._formpost({ uri: '/test.json' }, {});
+  t.equal(stream, ret);
+
+  ret = yam.messages();
+  t.equal(stream, ret);
 
   t.end();
 });

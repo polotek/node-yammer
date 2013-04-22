@@ -115,7 +115,7 @@ Yammer.prototype.request = function (opts, cb) {
     opts.headers.authorization = auth;
   }
 
-  request(opts, function (e, resp, body) {
+  return request(opts, function (e, resp, body) {
     if (e) { return cb(e); }
     if (resp.statusCode > 399) {
       return cb(new Error('Error status '+resp.statusCode+'\n'), body, resp);
@@ -128,13 +128,13 @@ Yammer.prototype.request = function (opts, cb) {
   })
 }
 Yammer.prototype._get = function (url, cb) {
-  this.request({uri:url, method:'GET'}, cb);
+  return this.request({uri:url, method:'GET'}, cb);
 }
 Yammer.prototype._formpost = function (url, data, cb) {
-  this.request({uri:url, method:'POST', headers:{'content-type':'application/x-www-form-urlencoded'}, body:qs.stringify(data)}, cb)
+  return this.request({uri:url, method:'POST', headers:{'content-type':'application/x-www-form-urlencoded'}, body:qs.stringify(data)}, cb)
 }
 Yammer.prototype._post = function (url, data, cb) {
-  this.request({uri:url, method:'POST', body:JSON.stringify(data), headers:{'content-type':'application/json'}}, cb)
+  return this.request({uri:url, method:'POST', body:JSON.stringify(data), headers:{'content-type':'application/json'}}, cb)
 }
 Yammer.prototype._boolCb = function(cb) {
   return function(e, body, resp) {
@@ -147,7 +147,7 @@ Yammer.prototype._boolCb = function(cb) {
   };
 }
 Yammer.prototype.messages = function (cb) {
-  this._get(this.opts.hostname + '/api/v1/messages.', cb);
+  return this._get(this.opts.hostname + '/api/v1/messages.', cb);
 }
 Yammer.prototype.messagesSent = function (cb) {
   this._get(this.opts.hostname + '/api/v1/messages/sent.', cb);
