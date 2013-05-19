@@ -20,8 +20,8 @@
     "otools": "*"
   },
   "devDependencies": {
-    "tape": "~0.3",
-    "mock": "~0.1",
-    "sinon": "~1.6"
+    "tape": "1.x",
+    "mock": "0.1.x",
+    "sinon": "1.6.x"
   }
 }
