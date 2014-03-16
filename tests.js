@@ -1,13 +1,17 @@
 var test = require('tape')
   , mock = require('mock')
   , sinon = require('sinon')
+  , request = require('request')
   , nop = function() {}
   , requestMock = nop;
 
+var requestModule = function() {
+  return requestMock.apply(null, arguments);
+};
+requestModule.initParams = request.initParams;
+
 var yammer = mock('./main', {
-    request: function() {
-      return requestMock.apply(null, arguments);
-    }
+    request: requestModule
   }, require)
   , Yammer = yammer.Yammer;
 
@@ -23,9 +27,8 @@ test('access_token is added as authorization header', function(t) {
     uri: '/test'
   }, nop);
 
-  t.ok(requestMock.calledWith({
-    uri: '/test'
-    , headers: {
+  t.ok(requestMock.calledWithMatch('/test', {
+    headers: {
       authorization: 'Bearer test_token'
     }
   }), 'oauth token present in headers');
@@ -42,14 +45,14 @@ test('json format is added by default', function(t) {
     uri: '/test.'
   }, nop);
 
-  t.ok(requestMock.calledWithMatch({ uri: '/test.json' }), 'url has json format');
+  t.ok(requestMock.calledWithMatch('/test.json'), 'url has json format');
 
   return t.end();
 });
 
 
 test('json response is parsed automatically', function(t) {
-  requestMock = sinon.stub().callsArgWith(1
+  requestMock = sinon.stub().callsArgWith(2
     , null
     , {
       statusCode: 200
@@ -66,12 +69,12 @@ test('json response is parsed automatically', function(t) {
     uri: '/test.json'
   }, spy);
 
-  t.ok(spy.calledWith(null, { test: 'json' }), 'json response is parsed');
+  t.ok(spy.calledWithMatch(null, { test: 'json' }), 'json response is parsed');
   return t.end();
 });
 
 test('400 response returns error', function(t) {
-  requestMock = sinon.stub().callsArgWith(1
+  requestMock = sinon.stub().callsArgWith(2
     , null
     , {
       statusCode: 404
@@ -90,7 +93,7 @@ test('400 response returns error', function(t) {
 });
 
 test('500 response returns error', function(t) {
-  requestMock = sinon.stub().callsArgWith(1
+  requestMock = sinon.stub().callsArgWith(2
     , null
     , {
       statusCode: 500
@@ -109,7 +112,7 @@ test('500 response returns error', function(t) {
 });
 
 test('boolean callbacks return false for 404', function(t) {
-  requestMock = sinon.stub().callsArgWith(1
+  requestMock = sinon.stub().callsArgWith(2
     , null
     , {
       statusCode: 404
@@ -150,9 +153,8 @@ test('qs property is passed through as query parameters', function(t) {
     }
   }, nop);
 
-  t.ok(requestMock.calledWith({
-    uri: '/test?test_prop=test_value'
-  }), 'yam.request sends query parameters');
+  t.ok(requestMock.calledWithMatch('/test?test_prop=test_value')
+    , 'yam.request sends query parameters');
 
   yam.messages({
     uri: '/test'
@@ -162,9 +164,8 @@ test('qs property is passed through as query parameters', function(t) {
     }
   }, nop);
 
-  t.ok(requestMock.calledWith({
-    uri: '/test'
-    , qs: {
+  t.ok(requestMock.calledWithMatch('/test', {
+    qs: {
       test_prop: "test_value"
     }
   }), 'post to yam.messages sends query paramters');
