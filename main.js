@@ -103,7 +103,7 @@ Yammer.prototype._oauth = function() {
    'oauth_verifier="'+this.opts.oauth_verifier+'",' +
    'oauth_signature="'+this.opts.oauth_signature+'%26'+this.opts.oauth_token_secret+'"';
 }
-Yammer.prototype._req = function (opts, cb) {
+Yammer.prototype.request = function (opts, cb) {
   var auth = this._oauth();
 
   if (opts.uri[opts.uri.length - 1] === '.') {
@@ -128,13 +128,13 @@ Yammer.prototype._req = function (opts, cb) {
   })
 }
 Yammer.prototype._get = function (url, cb) {
-  this._req({uri:url, method:'GET'}, cb);
+  this.request({uri:url, method:'GET'}, cb);
 }
 Yammer.prototype._formpost = function (url, data, cb) {
-  this._req({uri:url, method:'POST', headers:{'content-type':'application/x-www-form-urlencoded'}, body:qs.stringify(data)}, cb)
+  this.request({uri:url, method:'POST', headers:{'content-type':'application/x-www-form-urlencoded'}, body:qs.stringify(data)}, cb)
 }
 Yammer.prototype._post = function (url, data, cb) {
-  this._req({uri:url, method:'POST', body:JSON.stringify(data), headers:{'content-type':'application/json'}}, cb)
+  this.request({uri:url, method:'POST', body:JSON.stringify(data), headers:{'content-type':'application/json'}}, cb)
 }
 Yammer.prototype._boolCb = function(cb) {
   return function(e, body, resp) {
