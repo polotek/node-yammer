@@ -30,7 +30,7 @@ test('access_token is added as authorization header', function(t) {
     }
   }));
 
-  t.end();
+  return t.end();
 });
 
 test('json format is added by default', function(t) {
@@ -44,7 +44,7 @@ test('json format is added by default', function(t) {
 
   t.ok(requestMock.calledWithMatch({ uri: '/test.json' }));
 
-  t.end();
+  return t.end();
 });
 
 
@@ -67,7 +67,7 @@ test('json response is parsed automatically', function(t) {
   }, spy);
 
   t.ok(spy.calledWith(null, { test: 'json' }));
-  t.end();
+  return t.end();
 });
 
 test('400 response returns error', function(t) {
@@ -86,7 +86,7 @@ test('400 response returns error', function(t) {
   }, spy);
 
   t.ok(spy.calledWithMatch(Error));
-  t.end();
+  return t.end();
 });
 
 test('500 response returns error', function(t) {
@@ -105,7 +105,7 @@ test('500 response returns error', function(t) {
   }, spy);
 
   t.ok(spy.calledWithMatch(Error));
-  t.end();
+  return t.end();
 });
 
 test('boolean callbacks return false for 404', function(t) {
@@ -135,5 +135,5 @@ test('boolean callbacks return false for 404', function(t) {
 
   t.ok(spy.calledWith(null, false));
 
-  t.end();
+  return t.end();
 });
