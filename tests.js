@@ -28,7 +28,7 @@ test('access_token is added as authorization header', function(t) {
     , headers: {
       authorization: 'Bearer test_token'
     }
-  }));
+  }), 'oauth token present in headers');
 
   return t.end();
 });
@@ -42,7 +42,7 @@ test('json format is added by default', function(t) {
     uri: '/test.'
   }, nop);
 
-  t.ok(requestMock.calledWithMatch({ uri: '/test.json' }));
+  t.ok(requestMock.calledWithMatch({ uri: '/test.json' }), 'url has json format');
 
   return t.end();
 });
@@ -66,7 +66,7 @@ test('json response is parsed automatically', function(t) {
     uri: '/test.json'
   }, spy);
 
-  t.ok(spy.calledWith(null, { test: 'json' }));
+  t.ok(spy.calledWith(null, { test: 'json' }), 'json response is parsed');
   return t.end();
 });
 
@@ -85,7 +85,7 @@ test('400 response returns error', function(t) {
     uri: '/test.json'
   }, spy);
 
-  t.ok(spy.calledWithMatch(Error));
+  t.ok(spy.calledWithMatch(Error), 'error on 400 response');
   return t.end();
 });
 
@@ -104,7 +104,7 @@ test('500 response returns error', function(t) {
     uri: '/test.json'
   }, spy);
 
-  t.ok(spy.calledWithMatch(Error));
+  t.ok(spy.calledWithMatch(Error), 'error on 500 response');
   return t.end();
 });
 
@@ -121,19 +121,53 @@ test('boolean callbacks return false for 404', function(t) {
 
   yam.checkUserSubscription('id', spy);
 
-  t.ok(spy.calledWith(null, false));
+  t.ok(spy.calledWith(null, false), 'checkUserSubscription boolean');
 
   yam.checkTagSubscription('id', spy);
 
-  t.ok(spy.calledWith(null, false));
+  t.ok(spy.calledWith(null, false), 'checkTagSubscription boolean');
 
   yam.checkThreadSubscription('id', spy);
 
-  t.ok(spy.calledWith(null, false));
+  t.ok(spy.calledWith(null, false), 'checkThreadSubscription boolean');
 
   yam.checkTopicSubscription('id', spy);
 
-  t.ok(spy.calledWith(null, false));
+  t.ok(spy.calledWith(null, false), 'checkTopicSubscription boolean');
+
+  return t.end();
+});
+
+test('qs property is passed through as query parameters', function(t) {
+  requestMock = sinon.spy();
+
+  var yam = new Yammer();
+
+  yam.request({
+    uri: '/test'
+    , qs: {
+      test_prop: "test_value"
+    }
+  }, nop);
+
+  t.ok(requestMock.calledWith({
+    uri: '/test?test_prop=test_value'
+  }), 'yam.request sends query parameters');
+
+  yam.messages({
+    uri: '/test'
+    ,  method: 'post'
+    , qs: {
+      test_prop: "test_value"
+    }
+  }, nop);
+
+  t.ok(requestMock.calledWith({
+    uri: '/test'
+    , qs: {
+      test_prop: "test_value"
+    }
+  }), 'post to yam.messages sends query paramters');
 
   return t.end();
 });
