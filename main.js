@@ -3,7 +3,9 @@ var request = require('request')
   , url = require('url')
   , mixin = require('otools').mixin;
 
-var slice = Array.prototype.slice;
+var slice = Array.prototype.slice
+  , initParams = request.initParams;
+
 
 function RealTime (yam) {
   this.yam = yam;
@@ -104,7 +106,7 @@ Yammer.prototype._oauth = function() {
    'oauth_signature="'+this.opts.oauth_signature+'%26'+this.opts.oauth_token_secret+'"';
 }
 Yammer.prototype.request = function (uri, opts, cb) {
-  var args = request.initParams(uri, opts, cb);
+  var args = initParams(uri, opts, cb);
 
   // console.log(args);
   uri = args.uri;
@@ -144,15 +146,24 @@ Yammer.prototype._formpost = function (url, data, cb) {
 Yammer.prototype._post = function (url, data, cb) {
   this.request({uri:url, method:'POST', body:JSON.stringify(data), headers:{'content-type':'application/json'}}, cb)
 }
-Yammer.prototype._boolCb = function(cb) {
-  return function(e, body, resp) {
-    if (resp.statusCode === 404) {
-      return cb(null, false);
-    } 
-    if (e) { return cb(e, body); }
+Yammer.prototype._boolCb = function(uri, opts, cb) {
+  var ret = {}
+    , args = initParams(uri, opts, cb);
 
-    return cb(null, body);
-  };
+  cb = args.callback;
+
+  return {
+    uri: args.uri
+    , options: args.opts
+    , callback: function boolCallback(e, body, resp) {
+      if (resp.statusCode === 404) {
+        return cb(null, false);
+      } 
+      if (e) { return cb(e, body); }
+
+      return cb(null, body);
+    }
+  }
 }
 Yammer.prototype.messages = function (opts, cb) {
   this.request(this.opts.hostname + '/api/v1/messages.', opts, cb);
@@ -237,20 +248,24 @@ Yammer.prototype.thread = function (id, opts, cb) {
 
 
 Yammer.prototype.checkUserSubscription = function (userid, opts, cb) {
-  cb = this._boolCb(cb);
-  this.request(this.opts.hostname + '/api/v1/subscriptions/to_user/'+userid+'.', opts, cb);
+  var args = this._boolCb(this.opts.hostname + '/api/v1/subscriptions/to_user/'+userid+'.'
+    , opts, cb);
+  this.request(args.uri, args.options, args.callback);
 }
 Yammer.prototype.checkTagSubscription = function (tagid, opts, cb) {
-  cb = this._boolCb(cb);
-  this.request(this.opts.hostname + '/api/v1/subscriptions/to_tag/'+tagid+'.', opts, cb);
+  var args = this._boolCb(this.opts.hostname + '/api/v1/subscriptions/to_tag/'+tagid+'.'
+    , opts, cb);
+  this.request(args.uri, args.options, args.callback);
 }
 Yammer.prototype.checkThreadSubscription = function (threadid, opts, cb) {
-  cb = this._boolCb(cb);
-  this.request(this.opts.hostname + '/api/v1/subscriptions/to_thread/'+threadid+'.', opts, cb);
+  var args = this._boolCb(this.opts.hostname + '/api/v1/subscriptions/to_thread/'+threadid+'.'
+    , opts, cb);
+  this.request(args.uri, args.options, args.callback);
 }
 Yammer.prototype.checkTopicSubscription = function (topicid, opts, cb) {
-  cb = this._boolCb(cb);
-  this.request(this.opts.hostname + '/api/v1/subscriptions/to_topic/'+topicid+'.', opts, cb);
+  var args = this._boolCb(this.opts.hostname + '/api/v1/subscriptions/to_topic/'+topicid+'.'
+    , opts, cb);
+  this.request(args.uri, args.options, args.callback);
 }
 
 Yammer.prototype.search = function (term, opts, cb) {
@@ -282,4 +297,5 @@ Yammer.prototype.tokens = function (opts, cb) {
   this.request(this.opts.hostname + '/api/v1/oauth/tokens.', opts, cb)
 }
 
-exports.Yammer = Yammer
+exports.Yammer = Yammer;
+exports.initParams = initParams;

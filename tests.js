@@ -153,22 +153,11 @@ test('qs property is passed through as query parameters', function(t) {
     }
   }, nop);
 
-  t.ok(requestMock.calledWithMatch('/test?test_prop=test_value')
-    , 'yam.request sends query parameters');
-
-  yam.messages({
-    uri: '/test'
-    ,  method: 'post'
-    , qs: {
-      test_prop: "test_value"
-    }
-  }, nop);
-
   t.ok(requestMock.calledWithMatch('/test', {
     qs: {
-      test_prop: "test_value"
+      test_prop: 'test_value'
     }
-  }), 'post to yam.messages sends query paramters');
+  }), 'yam.request sends query parameters');
 
   return t.end();
 });
