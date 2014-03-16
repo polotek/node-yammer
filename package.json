@@ -16,12 +16,12 @@
     "node": "*"
   },
   "dependencies": {
-    "request": "~2.16",
+    "request": "~2.34",
     "otools": "*"
   },
   "devDependencies": {
     "tape": "1.x",
     "mock": "0.1.x",
-    "sinon": "1.6.x"
+    "sinon": "~1.9"
   }
 }
