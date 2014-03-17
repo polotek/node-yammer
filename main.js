@@ -286,8 +286,12 @@ Yammer.prototype.checkTopicSubscription = function (topicid, opts, cb) {
   this.request(args.uri, args.options, args.callback);
 }
 
-Yammer.prototype.search = function (term, opts, cb) {
-  this.request(this.opts.hostname + '/api/v1/search.json?search='+term, opts, cb);
+Yammer.prototype.search = function (params, opts, cb) {
+  var args = initParams(this.opts.hostname + '/api/v1/search.'
+    , opts, cb);
+
+  args.options.qs = params;
+  this.request(args.uri, args.options, args.callback);
 }
 
 Yammer.prototype.networks = function (opts, cb) {
