@@ -161,3 +161,22 @@ test('qs property is passed through as query parameters', function(t) {
 
   return t.end();
 });
+
+test('form encoded data is sent', function(t) {
+  requestMock = sinon.spy();
+
+  var yam = new Yammer();
+
+  yam.createMessage({ test_prop: 'test_value' }, nop);
+
+  t.ok(requestMock.calledWithMatch('/api/v1/messages.json', {
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded'
+    }
+    , form: {
+      test_prop: 'test_value'
+    }
+  }), 'yam.request sends query parameters');
+
+  return t.end();
+});

@@ -87,7 +87,7 @@ RealTime.prototype.messages = function (cb) {
 
 function Yammer (opts) {
   this.opts = mixin({
-    hostname: 'http://www.yammer.com'
+    hostname: 'https://www.yammer.com'
   }, opts);
   this.realtime = new RealTime(this);
 }
@@ -128,23 +128,41 @@ Yammer.prototype.request = function (uri, opts, cb) {
     opts.headers.authorization = auth;
   }
 
-  request(uri, opts, function (e, resp, body) {
-    if (e) { return cb(e); }
+  request(uri, opts, function (err, resp, body) {
+    if (err) { return cb(err); }
     if (resp.statusCode > 399) {
       return cb(new Error('Error status '+resp.statusCode+'\n'), body, resp);
     }
-    if (resp.headers['content-type'].slice(0, 'application/json'.length) === 'application/json') {
-      cb(null, JSON.parse(body), resp);
-    } else {
-      cb(null, body, resp);
-    }
+
+    body = parseBody(resp, body);
+
+    return cb(null, body, resp);
   });
 }
-Yammer.prototype._formpost = function (url, data, cb) {
-  this.request({uri:url, method:'POST', headers:{'content-type':'application/x-www-form-urlencoded'}, body:qs.stringify(data)}, cb)
+
+function parseBody(res, body) {
+  var type = res.headers['content-type'] || '';
+  if(body && /^application\/json/i.test(type.trim())) {
+    try {
+      body = JSON.parse(body);
+    } catch(e) { /* ignore errors and still return the body */ }
+  }
+
+  return body;
 }
-Yammer.prototype._post = function (url, data, cb) {
-  this.request({uri:url, method:'POST', body:JSON.stringify(data), headers:{'content-type':'application/json'}}, cb)
+function formError(name, cb) {
+  return process.nextTick(function() {
+    return cb(new Error(name + ' requires form data'));
+  });
+}
+Yammer.prototype._formpost = function (url, opts, cb) {
+  var headers = opts.headers || {};
+  headers['content-type'] = 'application/x-www-form-urlencoded';
+  opts.headers = headers;
+
+  opts.method = 'POST';
+
+  this.request(url, opts, cb);
 }
 Yammer.prototype._boolCb = function(uri, opts, cb) {
   var ret = {}
@@ -154,7 +172,7 @@ Yammer.prototype._boolCb = function(uri, opts, cb) {
 
   return {
     uri: args.uri
-    , options: args.opts
+    , options: args.options
     , callback: function boolCallback(e, body, resp) {
       if (resp.statusCode === 404) {
         return cb(null, false);
@@ -276,14 +294,26 @@ Yammer.prototype.networks = function (opts, cb) {
   this.request(this.opts.hostname + '/api/v1/networks/current.', opts, cb);
 }
 
-Yammer.prototype.invite = function (email, opts, cb) {
-  this._post(this.opts.hostname + '/api/v1/invitations.', {email:email}, opts, cb);
+Yammer.prototype.invite = function (formdata, opts, cb) {
+  var args = initParams(this.opts.hostname + '/api/v1/invitations.'
+    , opts, cb);
+
+  args.options.form = formdata;
+  this._formpost(args.uri, args.options, args.callback);
 }
-Yammer.prototype.createMessage = function (obj, opts, cb) {
-  this._formpost(this.opts.hostname + '/api/v1/messages.json', obj, opts, cb);
+Yammer.prototype.createMessage = function (formdata, opts, cb) {
+  var args = initParams(this.opts.hostname + '/api/v1/messages.'
+    , opts, cb);
+
+  args.options.form = formdata;
+  this._formpost(args.uri, args.options, args.callback);
 }
-Yammer.prototype.likeMessage = function(obj, opts, cb) {
-  this._formpost(this.opts.hostname + '/api/v1/messages/liked_by', obj, opts, cb);
+Yammer.prototype.likeMessage = function(formdata, opts, cb) {
+  var args = initParams(this.opts.hostname + '/api/v1/messages/liked_by/current.'
+    , opts, cb);
+
+  args.options.form = formdata;
+  this._formpost(args.uri, args.options, args.callback);
 }
 
 Yammer.prototype.presences = function (opts, cb) {
