@@ -1,6 +1,4 @@
 var request = require('request')
-  , qs = require('querystring')
-  , url = require('url')
   , mixin = require('otools').mixin;
 
 var slice = Array.prototype.slice
