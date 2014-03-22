@@ -10,7 +10,7 @@ var requestModule = function() {
 };
 requestModule.initParams = request.initParams;
 
-var yammer = mock('./main', {
+var yammer = mock('./lib/yammer', {
     request: requestModule
   }, require)
   , Yammer = yammer.Yammer;
