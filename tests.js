@@ -10,10 +10,9 @@ var requestModule = function() {
 };
 requestModule.initParams = request.initParams;
 
-var yammer = mock('./lib/yammer', {
+var Yammer = mock('./lib/yammer', {
     request: requestModule
-  }, require)
-  , Yammer = yammer.Yammer;
+  }, require);
 
 
 test('access_token is added as authorization header', function(t) {
