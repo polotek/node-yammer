@@ -88,29 +88,29 @@ test('boolean callbacks return false for 404', function(t) {
   nock('https://www.yammer.dev').get('/api/v1/subscriptions/to_user/1.json')
     .reply(404, '');
 
-  yam.checkUserSubscription(1, function (err, body) {
-    t.equal(body, false, 'checkUserSubscription boolean');
+  yam.subscriptions.toUser(1, function (err, body) {
+    t.equal(body, false, 'subscriptions.toUser boolean');
   });
 
   nock('https://www.yammer.dev').get('/api/v1/subscriptions/to_tag/1.json')
     .reply(404, '');
 
-  yam.checkTagSubscription(1, function (err, body) {
-    t.equal(body, false, 'checkTagSubscription boolean');
+  yam.subscriptions.toTag(1, function (err, body) {
+    t.equal(body, false, 'subscriptions.toTag boolean');
   });
 
   nock('https://www.yammer.dev').get('/api/v1/subscriptions/to_thread/1.json')
     .reply(404, '');
 
-  yam.checkThreadSubscription(1, function (err, body) {
-    t.equal(body, false, 'checkThreadSubscription boolean');
+  yam.subscriptions.toThread(1, function (err, body) {
+    t.equal(body, false, 'subscriptions.toThread boolean');
   });
 
   nock('https://www.yammer.dev').get('/api/v1/subscriptions/to_topic/1.json')
     .reply(404, '');
 
-  yam.checkTopicSubscription(1, function (err, body) {
-    t.equal(body, false, 'checkTopicSubscription boolean');
+  yam.subscriptions.toTopic(1, function (err, body) {
+    t.equal(body, false, 'subscriptions.toTopic boolean');
   });
 });
 
@@ -140,7 +140,7 @@ test('form encoded data is sent', function(t) {
   nock('https://www.yammer.dev').post('/api/v1/messages.json')
     .reply(200, '');
 
-  yam.createMessage({ test_prop: 'test_value' }, function (err, body, res) {
+  yam.messages.post({ test_prop: 'test_value' }, function (err, body, res) {
     var req = res.request;
     t.equal(req.headers['content-type'],
       'application/x-www-form-urlencoded; charset=utf-8',
@@ -149,5 +149,4 @@ test('form encoded data is sent', function(t) {
       'request body sent');
     t.end();
   });
-
 });
