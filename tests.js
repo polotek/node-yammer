@@ -50,28 +50,6 @@ test('json format is added by default', function(t) {
 });
 
 
-test('json response is parsed automatically', function(t) {
-  requestMock = sinon.stub().callsArgWith(2
-    , null
-    , {
-      statusCode: 200
-      , headers: {
-        'content-type': 'application/json'
-      }
-    }
-    , '{ "test": "json" }');
-
-  var spy = sinon.spy()
-  , yam = new Yammer();
-
-  yam.request({
-    uri: '/test.json'
-  }, spy);
-
-  t.ok(spy.calledWithMatch(null, { test: 'json' }), 'json response is parsed');
-  return t.end();
-});
-
 test('400 response returns error', function(t) {
   requestMock = sinon.stub().callsArgWith(2
     , null
