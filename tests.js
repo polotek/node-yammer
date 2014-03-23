@@ -41,7 +41,7 @@ test('json format is added by default', function(t) {
   var yam = new Yammer();
 
   yam.request({
-    uri: '/test.'
+    uri: '/test'
   }, nop);
 
   t.ok(requestMock.calledWithMatch('/test.json'), 'url has json format');
