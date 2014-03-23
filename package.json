@@ -24,7 +24,6 @@
   },
   "devDependencies": {
     "tape": "1.x",
-    "mock": "0.1.x",
-    "sinon": "~1.9"
+    "nock": "~0.27.2"
   }
 }
