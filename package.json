@@ -8,7 +8,10 @@
   },
   "author": "Mikeal Rogers <mikeal.rogers@gmail.com>",
   "maintainer": "polotek (Marco Rogers)",
-  "main": "main.js",
+  "contributors": [
+    "Danny Amey <danny@dannyamey.com>"
+  ],
+  "main": "lib/yammer.js",
   "scripts": {
     "test": "node tests.js"
   },
