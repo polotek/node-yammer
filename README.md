@@ -1,5 +1,7 @@
 # Client library for the yammer api.
 
+[![Build Status](https://travis-ci.org/polotek/node-yammer.svg?branch=master)](https://travis-ci.org/polotek/node-yammer)
+
 ```
 var Yammer = new require('node-yammer').Yammer;
 
